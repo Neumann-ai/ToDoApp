@@ -97,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
                 if(!thisItem.contains("Done!"))
                 {
                     itemList.set(position, thisItem + "   Done!");
+                    PrefConfig.writeListInPrefs(getApplicationContext(), itemList);
                 }
                 adapter.notifyDataSetChanged();
 
