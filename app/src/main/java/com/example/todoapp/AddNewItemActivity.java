@@ -1,9 +1,11 @@
 package com.example.todoapp;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -31,12 +33,21 @@ public class AddNewItemActivity extends AppCompatActivity {
         EditText text = findViewById(R.id.editTextTextPersonName);
         newItem = text.getText().toString();
 
-        itemList.add(newItem);
-        PrefConfig.writeListInPrefs(getApplicationContext(), itemList);
+        if(!newItem.isEmpty())
+        {
+            itemList.add(newItem);
+            PrefConfig.writeListInPrefs(getApplicationContext(), itemList);
 
+            Intent mainIntent = new Intent(this, MainActivity.class);
+            mainIntent = mainIntent.putStringArrayListExtra("New_Item", itemList);
+            startActivity(mainIntent);
+        }
+        else
+        {
+            Context context = getApplicationContext();
 
-        Intent mainIntent = new Intent(this, MainActivity.class);
-        mainIntent = mainIntent.putStringArrayListExtra("New_Item", itemList);
-        startActivity(mainIntent);
+            Toast.makeText(context,"You can't create an empty task", Toast.LENGTH_LONG).show();
+        }
+
     }
 }
