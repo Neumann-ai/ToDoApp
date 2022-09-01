@@ -11,13 +11,16 @@
         android:layout_width="321dp"
         android:layout_height="70dp"
         android:ems="10"
+        android:hint="@string/new_item"
         android:inputType="textPersonName"
-        android:text="@string/new_item"
+        android:singleLine="true"
+        android:maxLength="50"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.092" />
+
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floatingActionButton2"
