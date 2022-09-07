@@ -9,37 +9,60 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
+
+
 public class AddNewItemActivity extends AppCompatActivity {
 
-    public String newItem;
+    public Tasks newItem;
 
-    public ArrayList<String> itemList;
+    public ArrayList<Tasks> itemList;
+
+    public String jsonItemList;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_new_item);
 
         Intent intent = getIntent();
-        itemList = intent.getStringArrayListExtra("item_List");
+        jsonItemList = intent.getStringExtra("item_List");
 
+        Gson gson = new Gson();
+        Type type = new TypeToken<ArrayList<Tasks>>(){}.getType();
+        itemList = gson.fromJson(jsonItemList, type);
     }
 
     public void createItem(View view)
     {
         EditText text = findViewById(R.id.editTextTextPersonName);
-        newItem = text.getText().toString();
+        SimpleDateFormat formater = new SimpleDateFormat("dd/MM/yyyy");
+        Date date = new Date();
+        newItem = new Tasks(text.getText().toString(), formater.format(date));
 
-        if(!newItem.isEmpty())
+
+        if(!newItem.getText().isEmpty())
         {
             itemList.add(newItem);
             PrefConfig.writeListInPrefs(getApplicationContext(), itemList);
 
+            Gson gson = new Gson();
+
+            String JsonList = gson.toJson(itemList);
+
             Intent mainIntent = new Intent(this, MainActivity.class);
-            mainIntent = mainIntent.putStringArrayListExtra("New_Item", itemList);
+            mainIntent = mainIntent.putExtra("New_Item", JsonList);
             startActivity(mainIntent);
         }
         else

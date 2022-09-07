@@ -13,19 +13,26 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
 
 
-    public ArrayList<String> itemList;
+    public ArrayList<Tasks> itemList;
 
-    public ArrayAdapter<String> adapter;
+    public ArrayAdapter<Tasks> adapter;
 
-    public ListView layout;
+    public RecyclerView layout;
 
 
 
@@ -34,41 +41,43 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        layout = findViewById(R.id.listView);
+        layout = findViewById(R.id.mainLayout);
+        layout.setLayoutManager(new LinearLayoutManager(this));
+
 
         Intent intent = getIntent();
 
-        itemList = PrefConfig.readItemList(getApplicationContext());
+       itemList = PrefConfig.readItemList(getApplicationContext());
 
-        ArrayList<String> updatedList = intent.getStringArrayListExtra("New_Item");
+        String stupdatedList = intent.getStringExtra("New_Item");
 
-        if(updatedList == null && itemList == null)
+        if(stupdatedList == null && itemList == null)
         {
-            itemList = new ArrayList<>();
+            itemList = new ArrayList<Tasks>();
+            Tasks newTask = new Tasks("default", "default");
+
+            itemList.add(newTask);
+
             Log.d("message", "no hay nada rey");
         }
         else
         {
-            if(updatedList != null)
+            if(stupdatedList != null)
             {
+                Gson gson = new Gson();
+                Type type = new TypeToken<ArrayList<Tasks>>(){}.getType();
+                ArrayList<Tasks> updatedList = gson.fromJson(stupdatedList, type);
                 itemList = updatedList;
             }
         }
 
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, itemList);
+        adapter_Items adapter = new adapter_Items(itemList);
 
         layout.setAdapter(adapter);
-        setUpItemOnLongClickListener();
+        //setUpItemOnLongClickListener();
     }
 
-    public void addItem(View view)
-    {
-        Intent intent = new Intent(this, AddNewItemActivity.class);
-        intent.putStringArrayListExtra("item_List", itemList);
-        startActivity(intent);
-    }
-
-    public void setUpItemOnLongClickListener()
+    /*public void setUpItemOnLongClickListener()
     {
         layout.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -104,5 +113,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }*/
+
+    public void addItem(View view)
+    {
+        Intent intent = new Intent(this, AddNewItemActivity.class);
+        Gson gson = new Gson();
+        String JsonList = gson.toJson(itemList);
+
+        intent.putExtra("item_List",  JsonList);
+        startActivity(intent);
     }
 }
