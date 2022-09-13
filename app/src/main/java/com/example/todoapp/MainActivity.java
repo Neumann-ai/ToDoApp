@@ -25,14 +25,14 @@ import java.util.Arrays;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements RecyclerViewInterface {
 
 
     public ArrayList<Tasks> itemList;
 
-    public ArrayAdapter<Tasks> adapter;
-
     public RecyclerView layout;
+
+    public adapter_Items adapterItems;
 
 
 
@@ -71,48 +71,11 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        adapter_Items adapter = new adapter_Items(itemList);
+        adapterItems = new adapter_Items(itemList, this );
 
-        layout.setAdapter(adapter);
-        //setUpItemOnLongClickListener();
+        layout.setAdapter(adapterItems);
+
     }
-
-    /*public void setUpItemOnLongClickListener()
-    {
-        layout.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l)
-            {
-                Context context = getApplicationContext();
-                Toast.makeText(context, "Item Removed", Toast.LENGTH_LONG).show();
-
-                itemList.remove(i);
-                PrefConfig.writeListInPrefs(getApplicationContext(), itemList);
-
-                adapter.notifyDataSetChanged();
-                return true;
-
-            }
-        });
-
-        layout.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Context context = getApplicationContext();
-                Toast.makeText(context, "Task Done!", Toast.LENGTH_LONG).show();
-
-                String thisItem = itemList.get(position).toString();
-
-                if(!thisItem.contains("Done!"))
-                {
-                    itemList.set(position, thisItem + "   Done!");
-                }
-                adapter.notifyDataSetChanged();
-
-            }
-        });
-
-    }*/
 
     public void addItem(View view)
     {
@@ -122,5 +85,36 @@ public class MainActivity extends AppCompatActivity {
 
         intent.putExtra("item_List",  JsonList);
         startActivity(intent);
+    }
+
+    @Override
+    public void onItemClick(int position) {
+        Tasks doneTask = itemList.get(position);
+
+        String taskText = doneTask.getText();
+
+        if(!doneTask.getText().contains("Done!"))
+        {
+            doneTask.setText(taskText + " Done!");
+            itemList.set(position, doneTask);
+            Context context = getApplicationContext();
+            Toast.makeText(context, "Task Done!", Toast.LENGTH_LONG).show();
+            PrefConfig.writeListInPrefs(getApplicationContext(), itemList);
+            adapterItems.notifyDataSetChanged();
+        }
+
+
+    }
+
+    @Override
+    public void onItemLongClick(int position) {
+        itemList.remove(position);
+
+        Context context = getApplicationContext();
+        Toast.makeText(context, "Item Removed", Toast.LENGTH_LONG).show();
+
+        PrefConfig.writeListInPrefs(getApplicationContext(), itemList);
+
+        adapterItems.notifyDataSetChanged();
     }
 }
