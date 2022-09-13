@@ -104,7 +104,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerViewInter
         }
 
 
-    }
 
     @Override
     public void onItemLongClick(int position) {
